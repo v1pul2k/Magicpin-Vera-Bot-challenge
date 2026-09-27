@@ -24,10 +24,10 @@ Author: magicpin AI Challenge Team
 BOT_URL = "http://localhost:8080"
 
 # Choose your LLM provider: "openai", "anthropic", "gemini", "deepseek", "groq", "ollama", "openrouter"
-LLM_PROVIDER = "gemini"
+LLM_PROVIDER = "groq"
 
 # Your API key (paste your key here)
-LLM_API_KEY = "AIzaSyCb2pRpRShbI7TO7Qp_6fWUMQ37zyC4Nn4"  # <-- PUT YOUR API KEY HERE
+LLM_API_KEY = ""  # <-- PUT YOUR API KEY HERE  # <-- PUT YOUR API KEY HERE
 
 # Model to use (leave empty for default, or specify like "gpt-4o", "claude-3-5-sonnet-20241022", etc.)
 LLM_MODEL = ""  # <-- Optional: specify model or leave empty for default
@@ -256,7 +256,7 @@ class DeepSeekProvider(LLMProvider):
 class GroqProvider(LLMProvider):
     def __init__(self, api_key: str, model: str = ""):
         self.api_key = api_key
-        self.model = model or "llama-3.3-70b-versatile"
+        self.model = model or "openai/gpt-oss-120b"
 
     def name(self) -> str:
         return f"Groq ({self.model})"
