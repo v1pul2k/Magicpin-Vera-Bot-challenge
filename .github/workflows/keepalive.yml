@@ -1,0 +1,40 @@
+name: keepalive
+
+# Render's free tier spins a web service down after ~15 minutes of no
+# inbound traffic, and the next request pays a ~30-60s cold-start penalty.
+# The judge harness polls /v1/healthz every 60s during the test window, but
+# during the T-15min warmup gap (and any earlier quiet period) the service
+# could be asleep. This workflow pings /v1/healthz every 10 minutes,
+# 24/7, so the instance is always warm when the judge's warmup begins.
+#
+# Setup:
+#   1. Push this repo to GitHub.
+#   2. Add a repository secret BOT_URL = https://<your-service>.onrender.com
+#      (Settings → Secrets and variables → Actions → New repository secret).
+#   3. That's it — Actions will start running on the schedule below. You can
+#      also trigger it manually from the Actions tab ("Run workflow").
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
+  workflow_dispatch: {}       # allow manual trigger from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /v1/healthz
+        run: |
+          set -e
+          URL="${{ secrets.BOT_URL }}/v1/healthz"
+          echo "Pinging $URL"
+          for i in 1 2 3; do
+            if curl -fsS --max-time 20 "$URL"; then
+              echo "OK on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "All attempts failed"
+          exit 1

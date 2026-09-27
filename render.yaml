@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: vera-challenge-bot
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn bot:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /v1/healthz
+    envVars:
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false          # set this in the Render dashboard, not in git — free key at console.groq.com/keys
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: GEMINI_API_KEY
+        sync: false          # optional fallback — Gemini free tier caps some models at 20 req/day/project
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: ANTHROPIC_API_KEY
+        sync: false          # optional alternative — set LLM_PROVIDER=anthropic to use it
+      - key: TEAM_NAME
+        value: Solo Builder
+      - key: CONTACT_EMAIL
+        value: team@example.com
