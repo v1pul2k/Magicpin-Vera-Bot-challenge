@@ -19,8 +19,11 @@ on:
     - cron: "*/10 * * * *"   # every 10 minutes
   workflow_dispatch: {}       # allow manual trigger from the Actions tab
 
+permissions: {}
+
 jobs:
   ping:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: Ping /v1/healthz
@@ -28,13 +31,15 @@ jobs:
           set -e
           URL="${{ secrets.BOT_URL }}/v1/healthz"
           echo "Pinging $URL"
-          for i in 1 2 3; do
+          for i in 1 2 3 4 5 6; do
             if curl -fsS --max-time 20 "$URL"; then
               echo "OK on attempt $i"
               exit 0
             fi
-            echo "Attempt $i failed, retrying in 10s..."
-            sleep 10
+            if [ "$i" -lt 6 ]; then
+              echo "Attempt $i failed, retrying in 15s..."
+              sleep 15
+            fi
           done
           echo "All attempts failed"
           exit 1
