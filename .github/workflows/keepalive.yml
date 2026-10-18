@@ -19,6 +19,8 @@ on:
     - cron: "*/10 * * * *"   # every 10 minutes
   workflow_dispatch: {}       # allow manual trigger from the Actions tab
 
+permissions: {}
+
 jobs:
   ping:
     if: ${{ false }}
